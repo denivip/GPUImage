@@ -122,6 +122,8 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 
 @synthesize captureSessionPreset = _captureSessionPreset;
 @synthesize captureSession = _captureSession;
+@synthesize captureSessionA = _captureSessionA;
+
 @synthesize inputCamera = _inputCamera;
 @synthesize runBenchmark = _runBenchmark;
 @synthesize outputImageOrientation = _outputImageOrientation;
@@ -179,6 +181,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     
 	// Create the capture session
 	_captureSession = [[AVCaptureSession alloc] init];
+    _captureSessionA = [[AVCaptureSession alloc] init];
 	
     [_captureSession beginConfiguration];
     
@@ -330,19 +333,19 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     if (audioOutput)
         return NO;
     
-    [_captureSession beginConfiguration];
+    [_captureSessionA beginConfiguration];
     
     _microphone = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
     audioInput = [AVCaptureDeviceInput deviceInputWithDevice:_microphone error:nil];
-    if ([_captureSession canAddInput:audioInput])
+    if ([_captureSessionA canAddInput:audioInput])
     {
-        [_captureSession addInput:audioInput];
+        [_captureSessionA addInput:audioInput];
     }
     audioOutput = [[AVCaptureAudioDataOutput alloc] init];
     
-    if ([_captureSession canAddOutput:audioOutput])
+    if ([_captureSessionA canAddOutput:audioOutput])
     {
-        [_captureSession addOutput:audioOutput];
+        [_captureSessionA addOutput:audioOutput];
     }
     else
     {
@@ -350,7 +353,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     }
     [audioOutput setSampleBufferDelegate:self queue:audioProcessingQueue];
     
-    [_captureSession commitConfiguration];
+    [_captureSessionA commitConfiguration];
     return YES;
 }
 
@@ -359,13 +362,13 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     if (!audioOutput)
         return NO;
     
-    [_captureSession beginConfiguration];
-    [_captureSession removeInput:audioInput];
-    [_captureSession removeOutput:audioOutput];
+    [_captureSessionA beginConfiguration];
+    [_captureSessionA removeInput:audioInput];
+    [_captureSessionA removeOutput:audioOutput];
     audioInput = nil;
     audioOutput = nil;
     _microphone = nil;
-    [_captureSession commitConfiguration];
+    [_captureSessionA commitConfiguration];
     return YES;
 }
 
@@ -378,15 +381,17 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
         videoInput = nil;
         videoOutput = nil;
     }
+    [_captureSession commitConfiguration];
+    [_captureSessionA beginConfiguration];
     if (_microphone != nil)
     {
-        [_captureSession removeInput:audioInput];
-        [_captureSession removeOutput:audioOutput];
+        [_captureSessionA removeInput:audioInput];
+        [_captureSessionA removeOutput:audioOutput];
         audioInput = nil;
         audioOutput = nil;
         _microphone = nil;
     }
-    [_captureSession commitConfiguration];
+    [_captureSessionA commitConfiguration];
 }
 
 #pragma mark -
@@ -408,6 +413,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 	{
         startingCaptureTime = [NSDate date];
 		[_captureSession startRunning];
+        [_captureSessionA startRunning];
 	};
 }
 
@@ -416,6 +422,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     if ([_captureSession isRunning])
     {
         [_captureSession stopRunning];
+        [_captureSessionA stopRunning];
     }
 }
 

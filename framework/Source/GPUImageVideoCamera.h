@@ -29,6 +29,7 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
     CGFloat totalFrameTimeDuringCapture;
     
     AVCaptureSession *_captureSession;
+    AVCaptureSession *_captureSessionA;
     AVCaptureDevice *_inputCamera;
     AVCaptureDevice *_microphone;
     AVCaptureDeviceInput *videoInput;
@@ -46,6 +47,7 @@ extern NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString
 
 /// The AVCaptureSession used to capture from the camera
 @property(readonly, retain, nonatomic) AVCaptureSession *captureSession;
+@property(readonly, retain, nonatomic) AVCaptureSession *captureSessionA;
 
 /// This enables the capture session preset to be changed on the fly
 @property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
