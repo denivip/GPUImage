@@ -436,10 +436,11 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     capturePaused = NO;
 }
 
-- (void)rotateCamera
+- (BOOL)rotateCamera
 {
-	if (self.frontFacingCameraPresent == NO)
-		return;
+    if (self.frontFacingCameraPresent == NO){
+		return NO;
+    }
 	
     NSError *error;
     AVCaptureDeviceInput *newVideoInput;
@@ -463,8 +464,8 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
 			backFacingCamera = device;
 		}
 	}
+    BOOL res = YES;
     newVideoInput = [[AVCaptureDeviceInput alloc] initWithDevice:backFacingCamera error:&error];
-    
     if (newVideoInput != nil)
     {
         [_captureSession beginConfiguration];
@@ -477,6 +478,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
         }
         else
         {
+            res = NO;
             [_captureSession addInput:videoInput];
         }
         //captureSession.sessionPreset = oriPreset;
@@ -485,6 +487,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
     
     _inputCamera = backFacingCamera;
     [self setOutputImageOrientation:_outputImageOrientation];
+    return res;
 }
 
 - (AVCaptureDevicePosition)cameraPosition 
